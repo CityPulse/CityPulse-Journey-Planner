@@ -11,7 +11,7 @@ All the CityPulse framework components are deployed on a back-end server and are
 
 Figure 1 depict the user interfaces used by the end user to set the travel preferences and the destination point.
 
-![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig1.a.PNG"Figure 1 a)- The user interfaces of the Android application used to select the starting point")
+![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig1.a.PNG "Figure 1 a)- The user interfaces of the Android application used to select the starting point")
 ![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig1.b.PNG "Figure 1 b)- Travel preferences ")
 
 
@@ -55,7 +55,7 @@ In order to allow the application developer to use Google Maps services, he/she 
 
 * Import the project in his/hers preffered IDE.
 * Edit the AndroidManifest.xml file al line 53(the key to be more exact)
-* In order to obain the new keys, we will need to get the SHA1 key from his IDE and go to URL_HERE to get a new key. This will allow him to run the application while still connected via USB cable to the computer.
+* In order to obain the new keys, we will need to get the SHA1 key from his IDE and go to https://console.developers.google.com/home/dashboard to get a new key. This will allow him to run the application while still connected via USB cable to the computer.
 
 
 The application developer also has to edit the DefaultValues.java . He will need to adapt to his scenario the Decision Support, Contextual Fintering and Data Federation websocket URLs.(lines 19,23,30 in DefaultValues.java)
