@@ -19,9 +19,9 @@ After the user has filled in the details and made the request using the user int
 
 * Type: indicating what decision support module is to be used for this application (“TRAVEL-PLANNER” in this case);
 * Functional details: specifying possible values of user’s requirements, including: 
-* * Functional parameters: mandatory information that the user provides such as starting and ending locations, starting date and time, and transportation type (car, bicycle, or walk). 
-* * Functional constraints: numerical thresholds for cost of a trip, distance, or travel time. 
-* * Functional preferences: the user can specify his preferences along selected routes, which hold the functional constraints. These preferences can be the minimization or the maximisation of travel time or distance.
+ * Functional parameters: mandatory information that the user provides such as starting and ending locations, starting date and time, and transportation type (car, bicycle, or walk). 
+ * Functional constraints: numerical thresholds for cost of a trip, distance, or travel time. 
+ * Functional preferences: the user can specify his preferences along selected routes, which hold the functional constraints. These preferences can be the minimization or the maximisation of travel time or distance.
 
 
 The functional constraints and preferences specify different thresholds and minimization criteria for electing the route. During the development of the mobile application the domain expert has computed a default set of values for these thresholds. As a result of that, the route constraints user interface from Figure 1 b) allows the user to select between the fastest/shortest routes. If needed, more fields can be added in this user interface in order to allow more fine-grained constraints specification, but the usability of the application may suffer.
