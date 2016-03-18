@@ -30,7 +30,7 @@ The functional constraints and preferences specify different thresholds and mini
 Figure 2 a) depicts the user interface where the routes computed by the Decision support are displayed to the end user. 
 
 
-![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig2.a.PNG "Figure 2 a)- The user interfaces of the Android application: a) select the preferred route")
+![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig2.a.PNG "Figure 2 a)- The user interfaces of the Android application while selecting the preferred route")
 ![alt text](https://github.com/CityPulse/CityPulse-enabled-application-CONTEXT-AWARE-REAL-TIME-TRAVEL-PLANNER/blob/master/fig2.b.PNG "Figure 2 b)- Notification of a traffic jam which appeared on the selected route while the user is travelling")
 
 
