@@ -60,7 +60,13 @@ In order to allow the application developer to use Google Maps services, he/she 
 
 The application developer also has to edit the DefaultValues.java . He will need to adapt to his scenario the Decision Support, Contextual Fintering and Data Federation websocket URLs.(lines 19,23,30 in DefaultValues.java)
 
+## Contributers
 
+The Context Aware Real Time Travel Planner was developed as part of the EU project CityPulse. The consortium member SIEMENS Corporate Technology Romania provided the main contributions for this component.
+
+CityPulse: http://www.ict-citypulse.eu/
+
+SIEMENS Corporate Technology Romania: http://www.siemens.ro
 
 
 ## Authors
