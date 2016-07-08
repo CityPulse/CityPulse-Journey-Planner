@@ -61,6 +61,8 @@ In order to allow the application developer to use Google Maps services, he/she 
 The application developer also has to edit the DefaultValues.java . He will need to adapt to his scenario the Decision Support, Contextual Fintering and Data Federation websocket URLs.(lines 19,23,30 in DefaultValues.java)
 
 
+
+
 ## Authors
 
 
