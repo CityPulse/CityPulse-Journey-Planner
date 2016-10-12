@@ -1,5 +1,3 @@
-# Contextual-Aware Real Time Travel Planner Android Application
-
 ## Instalation
 
 In order to use the application on your Android powered device, you will need to:
