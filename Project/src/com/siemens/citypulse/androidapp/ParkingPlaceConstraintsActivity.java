@@ -12,6 +12,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+/**
+ * 
+ * 
+ * 
+ * @author cosmin.marin
+ *
+ */
+
+
 public class ParkingPlaceConstraintsActivity extends Activity {
 
 	@Override
@@ -19,7 +28,6 @@ public class ParkingPlaceConstraintsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_parking_place_constraints);
 
-		
 		Button okBtn = (Button) findViewById(R.id.parkingPlaceConstraintsSaveButton);
 
 		final Intent intent = getIntent();

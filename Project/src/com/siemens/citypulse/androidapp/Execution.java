@@ -22,8 +22,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 import citypulse.commons.contextual_filtering.city_event_ontology.CityEvent;
 import citypulse.commons.contextual_filtering.city_event_ontology.CriticalEventResults;
+import citypulse.commons.contextual_filtering.city_event_ontology.EventCategory;
 import citypulse.commons.contextual_filtering.contextual_event_request.ContextualEventRequest;
 import citypulse.commons.contextual_filtering.contextual_event_request.Place;
 import citypulse.commons.contextual_filtering.contextual_event_request.PlaceAdapter;
@@ -47,6 +49,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.siemens.citypulse.androidapp.common.DefaultValues;
 import com.siemens.citypulse.androidapp.common.MessageConverters;
+
+/**
+ * This activity is used to display the panel when the user is traveling to the
+ * point of interest.
+ * 
+ * It starts the {@link ParkingNotificationService} to receive the parking
+ * events for the selected parking spot, the {@link TravelNotificationService}
+ * to receive the traffic events on the selected route, and
+ * {@link TravelStatusService} to receive updates about the average speed and
+ * Pollution index on the selected route.
+ * 
+ * @author dan.puiu
+ *
+ */
 
 public class Execution extends Activity implements LocationListener {
 
@@ -158,7 +174,6 @@ public class Execution extends Activity implements LocationListener {
 					routeContextualEventRequestString);
 			startService(routeServiceIntent);
 
-			// Dan please check
 			routeContextualEventRequest = MessageConverters
 					.contextualEventRequestFromJSON(routeContextualEventRequestString);
 
@@ -183,7 +198,7 @@ public class Execution extends Activity implements LocationListener {
 				String criticalEventResultsString = intent
 						.getStringExtra(DefaultValues.EVENT_ALERT_MESSAGE_PAYLOAD);
 
-				System.out.println("critical event: "
+				System.out.println("Critical event was received: "
 						+ criticalEventResultsString);
 
 				GsonBuilder builder = new GsonBuilder();
@@ -210,6 +225,11 @@ public class Execution extends Activity implements LocationListener {
 								+ contextualEvent.getEventPlace()
 										.getCentreCoordinate().toString()
 								+ ")]; ");
+
+						TravelPlannerActivity.lastCityEventTimestamp = System
+								.currentTimeMillis();
+						TravelPlannerActivity.lastCityEvent = contextualEvent;
+
 					} else {
 						eventOK = false;
 					}
@@ -266,7 +286,8 @@ public class Execution extends Activity implements LocationListener {
 
 					alerDialogList.add(alertDialog);
 				} else {
-					System.out.println("The event was not displayed!");
+					System.out
+							.println("The event was not displayed because it was not well formated!");
 				}
 			}
 		};
@@ -281,12 +302,11 @@ public class Execution extends Activity implements LocationListener {
 			public void onReceive(Context context, Intent intent) {
 				String errorMessage = intent
 						.getStringExtra(DefaultValues.ERROR_MESSAGE_PAYLOAD);
-				
-				Intent intentError = new Intent(currentActivity, ErrorPanel.class);
 
-				intentError.putExtra(
-						"Error",
-						errorMessage);
+				Intent intentError = new Intent(currentActivity,
+						ErrorPanel.class);
+
+				intentError.putExtra("Error", errorMessage);
 				startActivity(intentError);
 
 			}
@@ -304,9 +324,11 @@ public class Execution extends Activity implements LocationListener {
 				String statusEvent = intent
 						.getStringExtra(Execution.TRAVEL_STATUS_EVENT_PAYLOAD);
 
-				System.out.println("received event from data federation "
-						+ statusEvent);
+				System.out
+						.println("Received notification from the data federation component "
+								+ statusEvent);
 
+							
 				if (!statusEvent.contains("FAULT:")) {
 
 					DataFederationResult dataFederationRequest = (DataFederationResult) new Gson()
@@ -338,9 +360,14 @@ public class Execution extends Activity implements LocationListener {
 								trafficstatusMessage.length);
 
 					}
-				} else {
+				} else if (statusEvent.equals("FAULT: Index: 0, Size: 0")){
+					Toast.makeText(currentActivity,
+							"The application cannot provide any information about the average speed and pollution because there are no sensors on the selected route",
+							Toast.LENGTH_LONG).show();
+				}
+				else{
 					System.out
-							.println("The data federation event cannot be parsed!");
+							.println("The data federation notification cannot be parsed! " + statusEvent);
 
 					Intent errorIntent = new Intent(currentActivity,
 							ErrorPanel.class);
@@ -382,13 +409,10 @@ public class Execution extends Activity implements LocationListener {
 			stopService(travelStatusServiceIntent);
 		}
 
-		
-		System.out.println("1");
 		unregisterReceiver(alertsBroadcastReceiver);
-		System.out.println("2");
 		unregisterReceiver(statusBroadcastReceiver);
-		System.out.println("3");
-		
+		unregisterReceiver(errorBroadcastReceiver);
+
 		super.onDestroy();
 
 	}
@@ -527,34 +551,34 @@ public class Execution extends Activity implements LocationListener {
 		final Editor settingsEditor = settingsPreferences.edit();
 
 		int latencySmallerThanRestoredValue = settingsPreferences.getInt(
-				"latencySmallerThanValue", 0);
+				"latencySmallerThanValue", 5000);
 		boolean latencySmallerThanRestoredCheckBox = settingsPreferences
-				.getBoolean("latencySmallerThanCheckBox", false);
+				.getBoolean("latencySmallerThanCheckBox", true);
 
 		int priceSmallerThanRestoredValue = settingsPreferences.getInt(
-				"priceSmallerThanValue", 0);
+				"priceSmallerThanValue", 5000);
 		boolean priceSmallerThanRestoredCheckBox = settingsPreferences
-				.getBoolean("priceSmallerThanCheckBox", false);
+				.getBoolean("priceSmallerThanCheckBox", true);
 
 		int securityLevelRestoredValue = settingsPreferences.getInt(
-				"securityLevelValue", 0);
+				"securityLevelValue", 1);
 		boolean securityLevelRestoredCheckBox = settingsPreferences.getBoolean(
-				"securityLevelCheckBox", false);
+				"securityLevelCheckBox", true);
 
 		int accuracyBiggerThanRestoredValue = settingsPreferences.getInt(
 				"accuracyBiggerThanValue", 0);
 		boolean accuracyBiggerThanRestoredCheckBox = settingsPreferences
-				.getBoolean("accuracyBiggerThanCheckBox", false);
+				.getBoolean("accuracyBiggerThanCheckBox", true);
 
 		int completnessBiggerThanRestoredValue = settingsPreferences.getInt(
 				"completnessBiggerThanValue", 0);
 		boolean completnessBiggerThanRestoredCheckBox = settingsPreferences
-				.getBoolean("completnessBiggerThanCheckBox", false);
+				.getBoolean("completnessBiggerThanCheckBox", true);
 
 		int bandwithBiggerThanRestoredValue = settingsPreferences.getInt(
-				"bandwithBiggerThanValue", 0);
+				"bandwithBiggerThanValue", 500);
 		boolean bandwithBiggerThanRestoredCheckBox = settingsPreferences
-				.getBoolean("bandwithBiggerThanCheckBox", false);
+				.getBoolean("bandwithBiggerThanCheckBox", true);
 
 		QosVector qosVector = new QosVector();
 
@@ -587,7 +611,9 @@ public class Execution extends Activity implements LocationListener {
 
 		travelStatusEventRequest = new Gson().toJson(dataFederationRequest);
 
-		System.out.println("dataFederationRequest " + travelStatusEventRequest);
+		System.out
+				.println("The following request is sent to the data federation component: "
+						+ travelStatusEventRequest);
 
 		travelStatusServiceIntent = new Intent(this, TravelStatusService.class);
 		travelStatusServiceIntent.putExtra(TRAVEL_STATUS_REQUEST,

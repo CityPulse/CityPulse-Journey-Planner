@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
+import com.siemens.citypulse.androidapp.common.ApplicationExecutionConditions;
 import com.siemens.citypulse.androidapp.common.MessageConverters;
 
 public class TravelPlannerRouteSelection extends Activity implements
@@ -84,6 +85,7 @@ public class TravelPlannerRouteSelection extends Activity implements
 		startingPoint = new Gson().fromJson(
 				executionBundle.getString(Execution.STARTING_POINT),
 				LatLng.class);
+		
 		destinationPoint = new Gson().fromJson(
 				executionBundle.getString(Execution.DESTINATION_POINT),
 				LatLng.class);
@@ -98,6 +100,8 @@ public class TravelPlannerRouteSelection extends Activity implements
 		MapFragment myMapFragment = (MapFragment) myFragmentManager
 				.findFragmentById(R.id.travelPlannerSelectionMap);
 		map = myMapFragment.getMap();
+		
+		map.clear();
 
 		loadRoutesOnMap();
 
@@ -109,6 +113,11 @@ public class TravelPlannerRouteSelection extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				
+				if (!ApplicationExecutionConditions
+						.isGPSandInternetSignal(currentActivity)) {
+					return;
+				}
 
 				if (selectedRouteNumber == ROUTE_NUMBER_NOT_SELECTED) {
 					Toast.makeText(currentActivity,
@@ -310,7 +319,8 @@ public class TravelPlannerRouteSelection extends Activity implements
 
 		map.addMarker(new MarkerOptions().title("Destination point").position(
 				destinationPoint));
-
+		
+		
 		if (interestPoint != null) {
 			map.addMarker(new MarkerOptions()
 					.title("Point of interest")

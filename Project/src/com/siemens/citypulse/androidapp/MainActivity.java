@@ -1,8 +1,5 @@
 package com.siemens.citypulse.androidapp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
@@ -11,18 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import citypulse.commons.data.Coordinate;
-import citypulse.commons.event_request.DataFederationRequest;
-import citypulse.commons.event_request.DataFederationRequest.DataFederationPropertyType;
-import citypulse.commons.event_request.QosVector;
-import citypulse.commons.event_request.WeightVector;
 
-import com.google.gson.Gson;
 import com.siemens.citypulse.androidapp.common.DefaultValues;
+
+/**
+ * This is the main activity of the application. It contains three tab
+ * fragments: route, parking and setings.
+ * 
+ * @author dan.puiu, cosmin marin
+ *
+ */
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -139,9 +137,10 @@ public class MainActivity extends FragmentActivity implements
 
 		SharedPreferences settingsPreferences = getSharedPreferences(
 				"SettingsPreferences", Context.MODE_PRIVATE);
-		
-		String serverIP = settingsPreferences.getString("serverLocation", DefaultValues.WEB_SOCKET_SERVER_IP);
-		
+
+		String serverIP = settingsPreferences.getString("serverLocation",
+				DefaultValues.WEB_SOCKET_SERVER_IP);
+
 		System.out.println(serverIP);
 
 		return serverIP;

@@ -48,6 +48,9 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+import citypulse.commons.contextual_filtering.city_event_ontology.CityEvent;
+import citypulse.commons.contextual_filtering.contextual_event_request.Place;
+import citypulse.commons.contextual_filtering.contextual_event_request.PlaceAdapter;
 import citypulse.commons.data.Coordinate;
 import citypulse.commons.reasoning_request.ARType;
 import citypulse.commons.reasoning_request.Answer;
@@ -87,9 +90,13 @@ import com.siemens.citypulse.androidapp.autocompletetext.PlaceDetailsJSONParser;
 import com.siemens.citypulse.androidapp.autocompletetext.SimpleGeocodeJSONParser;
 import com.siemens.citypulse.androidapp.common.ApplicationExecutionConditions;
 import com.siemens.citypulse.androidapp.common.DefaultValues;
+import com.siemens.citypulse.androidapp.decisionsupport.ReRouteReasoningRequest;
 import com.siemens.citypulse.webSockets.WebSocketBasicClient;
 
 public class TravelPlannerActivity extends Fragment implements LocationListener {
+
+	public static CityEvent lastCityEvent = null;
+	public static Long lastCityEventTimestamp = null;
 
 	private LatLng destinationPoint = null;
 	// private LatLng startingPoint = null;
@@ -110,7 +117,10 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 	private AutocompleteGeoLocationDownloadTask placeDetailsDownloadTask;
 	private AutocompleteGeoLocationParserTask placesParserTask;
 	private AutocompleteGeoLocationParserTask placeDetailsParserTask;
+	
 
+	private Marker destinationPointMarkerOnMap = null;
+	private Marker interestPointMarkerOnMap = null;
 	private Marker userPositionMarker;
 
 	private Button carButton;
@@ -232,8 +242,9 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 				SendMessageToServer sendMessageTask = new SendMessageToServer();
 				sendMessageTask.execute();
-				
-				Toast.makeText(getActivity(),
+
+				Toast.makeText(
+						getActivity(),
 						"Please wait until the system computes the best routes to travel.",
 						Toast.LENGTH_LONG).show();
 
@@ -380,13 +391,24 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 				endPointTextField.setText(initialText, 0, initialText.length);
 
-				if (destinationPoint != null)
-					map.addMarker(new MarkerOptions()
+				if (destinationPoint != null){
+					
+					if(destinationPointMarkerOnMap!=null){
+					destinationPointMarkerOnMap.remove();
+				}
+				
+				destinationPointMarkerOnMap =map.addMarker(new MarkerOptions()
 							.position(destinationPoint).title(
 									"Destination point"));
+				}
 
 				if (interestPoint != null) {
-					map.addMarker(new MarkerOptions()
+					
+				if(interestPointMarkerOnMap!=null){
+					interestPointMarkerOnMap.remove();
+				}
+				
+				interestPointMarkerOnMap = map.addMarker(new MarkerOptions()
 							.title("Point of interest")
 							.position(interestPoint)
 							.icon(BitmapDescriptorFactory
@@ -542,17 +564,37 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 						requestFunctionalParameters, functionalConstraints,
 						requestFunctionalPreferences));
 
-		GsonBuilder builder = new GsonBuilder();
+		if ((lastCityEvent != null)
+				&& (lastCityEventTimestamp != null)
+				&& (System.currentTimeMillis() - lastCityEventTimestamp < 300000)) {
 
-		builder.registerTypeAdapter(FunctionalParameterValue.class,
-				new FunctionalParameterValueAdapter());
-		builder.registerTypeAdapter(FunctionalConstraintValue.class,
-				new FunctionalConstraintValueAdapter());
-		builder.registerTypeAdapter(Answer.class, new AnswerAdapter());
+			ReRouteReasoningRequest reRouteReasoningRequest = new ReRouteReasoningRequest(
+					reasoningRequest, lastCityEvent);
 
-		Gson gson = builder.create();
+			final GsonBuilder builderReroute = new GsonBuilder();
+			builderReroute.registerTypeAdapter(FunctionalParameterValue.class,
+					new FunctionalParameterValueAdapter());
+			builderReroute.registerTypeAdapter(FunctionalConstraintValue.class,
+					new FunctionalConstraintValueAdapter());
+			builderReroute.registerTypeAdapter(Place.class, new PlaceAdapter());
 
-		return gson.toJson(reasoningRequest);
+			final Gson gsonReroute = builderReroute.create();
+
+			return gsonReroute.toJson(reRouteReasoningRequest);
+		} else{
+			GsonBuilder builder = new GsonBuilder();
+
+			builder.registerTypeAdapter(FunctionalParameterValue.class,
+					new FunctionalParameterValueAdapter());
+			builder.registerTypeAdapter(FunctionalConstraintValue.class,
+					new FunctionalConstraintValueAdapter());
+			builder.registerTypeAdapter(Answer.class, new AnswerAdapter());
+
+			Gson gson = builder.create();
+			
+			return gson.toJson(reasoningRequest);
+		}
+			
 
 	}
 
@@ -617,7 +659,7 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 			} else {
 
-				System.out.println("Start");
+
 
 				Intent intent = new Intent(getActivity(),
 						TravelPlannerRouteSelection.class);
@@ -629,10 +671,12 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 									.toJson(new LatLng(lastLocation
 											.getLatitude(), lastLocation
 											.getLongitude())));
-					requestBundle.putString(Execution.DESTINATION_POINT,
-							new Gson().toJson(destinationPoint));
+					
 
 				}
+				
+				requestBundle.putString(Execution.DESTINATION_POINT,
+							new Gson().toJson(destinationPoint));
 
 				requestBundle.putString(
 						Execution.DECISION_SUPPORT_TRAVEL_PLANNER_RESONSE,
@@ -641,17 +685,8 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 						Execution.DECISION_SUPPORT_TRAVEL_PLANNER_REQUEST,
 						routeReasoningRequest);
 
-				if (routeReasoningResponse.equals("{\"answers\":[]}")) {
-					// Toast.makeText(getActivity(),
-					// "No recomendation received.",
-					// Toast.LENGTH_SHORT).show();
-					System.out.println("true");
-				} else {
-					System.out.println("fale");
-
-					intent.putExtra(Execution.EXECUTION_DETAILS, requestBundle);
-					startActivity(intent);
-				}
+				intent.putExtra(Execution.EXECUTION_DETAILS, requestBundle);
+				startActivity(intent);
 
 			}
 
@@ -679,9 +714,14 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
-			if (destinationPoint != null)
-				map.addMarker(new MarkerOptions().position(destinationPoint)
-						.title("Destination point"));
+			if (destinationPoint != null){
+				if(destinationPointMarkerOnMap!=null){
+					destinationPointMarkerOnMap.remove();
+				}
+				
+				destinationPointMarkerOnMap = map.addMarker(new MarkerOptions().position(destinationPoint)
+						.title(Execution.DESTINATION_POINT));
+			}
 
 		} else {
 			userPositionMarker.setPosition(latLng);
@@ -706,7 +746,7 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 	}
 
-	private void dislayMarkerAtLocationAndZoomIn(LatLng location) {
+	private Marker dislayMarkerAtLocationAndZoomIn(LatLng location) {
 
 		CameraUpdate cameraPosition = CameraUpdateFactory.newLatLng(location);
 		CameraUpdate cameraZoom = CameraUpdateFactory.zoomBy(5);
@@ -721,9 +761,11 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 		options.snippet("Latitude:" + location + ",Longitude:" + location);
 
 		// Adding the marker in the Google Map
-		map.addMarker(options);
+		Marker marker = map.addMarker(options);
 
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
+		
+		return marker;
 	}
 
 	// =================Classes and methods used for auto complete
@@ -918,13 +960,17 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 				String[] from = new String[] { "description" };
 				int[] to = new int[] { android.R.id.text1 };
 
-				// Creating a SimpleAdapter for the AutoCompleteTextView
-				SimpleAdapter adapter = new SimpleAdapter(getActivity()
+				try{
+					// Creating a SimpleAdapter for the AutoCompleteTextView
+					SimpleAdapter adapter = new SimpleAdapter(getActivity()
 						.getBaseContext(), result,
 						android.R.layout.simple_list_item_1, from, to);
 
-				// Setting the adapter
-				endPointTextField.setAdapter(adapter);
+					// Setting the adapter
+					endPointTextField.setAdapter(adapter);
+				}catch(Exception ex){
+					
+				}
 
 				break;
 			case PLACES_DETAILS:
@@ -939,7 +985,11 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 				destinationPoint = new LatLng(endPointLatitude,
 						endPointLongitude);
 
-				dislayMarkerAtLocationAndZoomIn(destinationPoint);
+				if(destinationPointMarkerOnMap!=null){
+					destinationPointMarkerOnMap.remove();
+				}
+				
+				destinationPointMarkerOnMap = dislayMarkerAtLocationAndZoomIn(destinationPoint);
 
 				InputMethodManager inputManager = (InputMethodManager) getActivity()
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -985,8 +1035,6 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 
 			responseList = list;
 
-
-
 			if (responseList != null) {
 
 				locations = new ArrayList<String>();
@@ -1019,7 +1067,11 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 					destinationPoint = new LatLng(endPointLatitude,
 							endPointLongitude);
 
-					dislayMarkerAtLocationAndZoomIn(destinationPoint);
+					if(destinationPointMarkerOnMap!=null){
+						destinationPointMarkerOnMap.remove();
+					}
+					
+					destinationPointMarkerOnMap = dislayMarkerAtLocationAndZoomIn(destinationPoint);
 
 				} else {
 
@@ -1054,14 +1106,19 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 									destinationPoint = new LatLng(
 											endPointLatitude, endPointLongitude);
 
-									dislayMarkerAtLocationAndZoomIn(destinationPoint);
+									if(destinationPointMarkerOnMap!=null){
+										destinationPointMarkerOnMap.remove();
+									}
+									
+									destinationPointMarkerOnMap = dislayMarkerAtLocationAndZoomIn(destinationPoint);
 
 								}
 							});
 					builder.show();
 				}
 			} else {
-				Toast.makeText(getActivity(),
+				Toast.makeText(
+						getActivity(),
 						"Unable to sugest any location. Most probably you are not connected to the internet.",
 						Toast.LENGTH_SHORT).show();
 			}

@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.siemens.citypulse.androidapp.common.ApplicationExecutionConditions;
 import com.siemens.citypulse.androidapp.common.DefaultValues;
 import com.siemens.citypulse.androidapp.common.MessageConverters;
 
@@ -101,6 +102,11 @@ public class ParkingPlaceSelectionActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				
+				if (!ApplicationExecutionConditions
+						.isGPSandInternetSignal(currentActivity)) {
+					return;
+				}
 
 				if (selectedParkingNumber == PARKING_PLACE_NUMBER_NOT_SELECTED) {
 					Toast.makeText(currentActivity,

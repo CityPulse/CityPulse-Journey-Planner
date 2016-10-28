@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.siemens.parkingapp.ParkingPlaceConstraintsActivity" >
+    tools:context="com.siemens.citypulse.androidapp.ParkingPlaceConstraintsActivity" >
 
     <TextView
         android:id="@+id/parkingPlaceConstraintsTitle"
@@ -45,19 +45,11 @@
         android:text="@string/shortest_walk_checkbox" />
 
     <Button
-        android:id="@+id/okButton3"
+        android:id="@+id/parkingPlaceConstraintsSaveButton"
         android:layout_width="125dp"
         android:layout_height="50dp"
-        android:layout_alignLeft="@+id/shortestWalkCheckBox"
         android:layout_alignParentBottom="true"
-        android:text="@string/ok_button" />
-
-    <Button
-        android:id="@+id/cancelButton1"
-        android:layout_width="125dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/okButton3"
-        android:layout_alignRight="@+id/parkingPlaceConstraintsTitle"
-        android:text="@string/cancel_button" />
+        android:layout_centerHorizontal="true"
+        android:text="Save" />
 
 </RelativeLayout>

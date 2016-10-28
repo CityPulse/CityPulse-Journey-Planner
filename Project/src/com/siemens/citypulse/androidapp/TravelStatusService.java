@@ -234,6 +234,15 @@ public class TravelStatusService extends Service {
 						"FAULT: Unable to connect to data federation endpoint: "
 								+ requestEndpoint);
 				sendBroadcast(intent);
+			} catch(Exception e){
+				e.printStackTrace();
+				
+				Intent intent = new Intent();
+				intent.setAction(Execution.TRAVEL_STATUS_EVENT);
+				intent.putExtra(Execution.TRAVEL_STATUS_EVENT_PAYLOAD,
+						"FAULT: The communication with the data federation endpoint was interupted. The application might not have acces to the internet any more."
+								);
+				sendBroadcast(intent);
 			}
 
 		}

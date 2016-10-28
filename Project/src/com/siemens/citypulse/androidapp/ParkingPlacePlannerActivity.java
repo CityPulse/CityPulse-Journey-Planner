@@ -89,7 +89,6 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 	private AutoCompleteTextView poiTextField;
 	private SupportMapFragment parkingPlaceSupportMapFragment;
 	private GoogleMap map;
-
 	AutocompleteGeoLocationDownloadTask placesDownloadTask;
 	AutocompleteGeoLocationDownloadTask placeDetailsDownloadTask;
 	AutocompleteGeoLocationParserTask placesParserTask;
@@ -101,6 +100,7 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 	private LatLng pointOfInterestLocation;
 	private Location lastLocation;
 	private boolean locationAvailable;
+	private Marker poiMarkerOnMap = null;
 	private Marker userPositionMarker;
 	private LocationManager locationManager;
 	private ParkingPlacePlannerActivity thisActivity = this;
@@ -342,7 +342,11 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 
 			if (pointOfInterestLocation != null) {
 
-				map.addMarker(new MarkerOptions()
+				if (poiMarkerOnMap != null) {
+					poiMarkerOnMap.remove();
+				}
+				
+				poiMarkerOnMap = map.addMarker(new MarkerOptions()
 						.title("Point of interest")
 						.position(pointOfInterestLocation)
 						.icon(BitmapDescriptorFactory
@@ -537,7 +541,6 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 				startActivity(intent);
 
 			}
-			System.out.println("ready");
 
 			return null;
 		}
@@ -739,13 +742,19 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 				String[] from = new String[] { "description" };
 				int[] to = new int[] { android.R.id.text1 };
 
-				// Creating a SimpleAdapter for the AutoCompleteTextView
-				SimpleAdapter adapter = new SimpleAdapter(getActivity()
+				try
+				{
+						// Creating a SimpleAdapter for the AutoCompleteTextView
+					SimpleAdapter adapter = new SimpleAdapter(getActivity()
 						.getBaseContext(), result,
 						android.R.layout.simple_list_item_1, from, to);
 
 				// Setting the adapter
 				poiTextField.setAdapter(adapter);
+				
+				}catch(Exception ex){
+					
+				}
 				break;
 			case PLACES_DETAILS:
 				HashMap<String, String> hm = result.get(0);
@@ -755,10 +764,16 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 
 				// Getting longitude from the parsed data
 				double longitude = Double.parseDouble(hm.get("lng"));
-
+				
+				
+				
 				pointOfInterestLocation = new LatLng(latitude, longitude);
-
-				map.addMarker(new MarkerOptions()
+				
+				if (poiMarkerOnMap != null) {
+					poiMarkerOnMap.remove();
+				}
+				
+				poiMarkerOnMap =   map.addMarker(new MarkerOptions()
 						.title("Point of interest")
 						.position(pointOfInterestLocation)
 						.icon(BitmapDescriptorFactory
@@ -842,7 +857,11 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 					pointOfInterestLocation = new LatLng(endPointLatitude,
 							endPointLongitude);
 
-					map.addMarker(new MarkerOptions()
+					if (poiMarkerOnMap != null) {
+						poiMarkerOnMap.remove();
+					}
+					
+					poiMarkerOnMap = map.addMarker(new MarkerOptions()
 							.title("Point of interest")
 							.position(pointOfInterestLocation)
 							.icon(BitmapDescriptorFactory
@@ -884,7 +903,11 @@ public class ParkingPlacePlannerActivity extends Fragment implements
 									pointOfInterestLocation = new LatLng(
 											endPointLatitude, endPointLongitude);
 
-									map.addMarker(new MarkerOptions()
+									if(poiMarkerOnMap!=null){
+										poiMarkerOnMap.remove();
+									}
+									
+									poiMarkerOnMap =map.addMarker(new MarkerOptions()
 											.title("Point of interest")
 											.position(pointOfInterestLocation)
 											.icon(BitmapDescriptorFactory

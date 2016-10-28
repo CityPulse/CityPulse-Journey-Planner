@@ -35,6 +35,19 @@ import citypulse.commons.data.Coordinate;
 import com.google.gson.Gson;
 import com.siemens.citypulse.androidapp.common.DefaultValues;
 
+/**
+ * This is the parking notification service. It connects to the contextual
+ * filtering component to receive the parking events.
+ * 
+ * When it is started it receives the parking details.
+ * 
+ * The service sends to the contextual filtering the GPS location every 10
+ * seconds.
+ * 
+ * @author dan.puiu
+ *
+ */
+
 public class ParkingNotificationService extends Service {
 
 	private Looper mServiceLooper;
@@ -50,7 +63,6 @@ public class ParkingNotificationService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -192,8 +204,6 @@ public class ParkingNotificationService extends Service {
 						UserGPSCoordinate userGPSCoordinate = new UserGPSCoordinate(
 								coordinate);
 
-						// System.out.println(userGPSCoordinate);
-
 						session.getBasicRemote().sendText(
 								new Gson().toJson(userGPSCoordinate));
 
@@ -210,7 +220,6 @@ public class ParkingNotificationService extends Service {
 				}, "The user stoped the reasoning."));
 
 			} catch (DeploymentException e) {
-				// TODO Auto-generated catch block
 				System.out
 						.println("Unable to open the connection with contextual filtering for parking  Deployment exception");
 
@@ -223,7 +232,6 @@ public class ParkingNotificationService extends Service {
 
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				System.out
 						.println("Unable to open the connection with contextual filtering for parking IO exception");
 				e.printStackTrace();
@@ -235,7 +243,6 @@ public class ParkingNotificationService extends Service {
 				sendBroadcast(intent);
 
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				System.out
 						.println("Unable to open the connection with contextual filtering for parking URI sintax error");
 				e.printStackTrace();
@@ -247,7 +254,6 @@ public class ParkingNotificationService extends Service {
 				sendBroadcast(intent);
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				System.out
 						.println("Unable to open the connection with contextual filtering for parking URI InterruptedException");
 				e.printStackTrace();
@@ -284,19 +290,16 @@ public class ParkingNotificationService extends Service {
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
 
 		}
 
