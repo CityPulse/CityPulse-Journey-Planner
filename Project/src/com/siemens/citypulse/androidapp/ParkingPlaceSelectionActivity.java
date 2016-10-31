@@ -79,6 +79,8 @@ public class ParkingPlaceSelectionActivity extends Activity implements
 				.getString(Execution.DECISION_SUPPORT_PARKING_PLANNER_RESONSE);
 		parkingReasoningRequest = requestBundle
 				.getString(Execution.DECISION_SUPPORT_PARKING_PLANNER_REQUEST);
+		
+		System.out.println(parkingReasoningRequest);
 
 		startingPoint = new Gson()
 				.fromJson(requestBundle.getString(Execution.STARTING_POINT),

@@ -684,6 +684,10 @@ public class TravelPlannerActivity extends Fragment implements LocationListener 
 				requestBundle.putString(
 						Execution.DECISION_SUPPORT_TRAVEL_PLANNER_REQUEST,
 						routeReasoningRequest);
+				
+				requestBundle.putString(
+						Execution.DECISION_SUPPORT_TRAVEL_PLANNER_MEANS_OF_TRANSPORTATION,
+						transportationType);
 
 				intent.putExtra(Execution.EXECUTION_DETAILS, requestBundle);
 				startActivity(intent);

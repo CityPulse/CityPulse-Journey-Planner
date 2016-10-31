@@ -30,7 +30,6 @@ import citypulse.commons.contextual_filtering.contextual_event_request.Route;
 import citypulse.commons.data.Coordinate;
 import citypulse.commons.reasoning_request.Answer;
 import citypulse.commons.reasoning_request.Answers;
-import citypulse.commons.reasoning_request.ReasoningRequest;
 import citypulse.commons.reasoning_request.concrete.AnswerTravelPlanner;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -45,6 +44,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.siemens.citypulse.androidapp.common.ApplicationExecutionConditions;
+import com.siemens.citypulse.androidapp.common.DefaultValues;
 import com.siemens.citypulse.androidapp.common.MessageConverters;
 
 public class TravelPlannerRouteSelection extends Activity implements
@@ -54,6 +54,7 @@ public class TravelPlannerRouteSelection extends Activity implements
 
 	private String routeReasoningResponse;
 	private String routeReasoningRequest;
+	private String tranportationType;
 
 	private GoogleMap map;
 	private HashMap<Integer, Polyline> routesPolylines = new HashMap<Integer, Polyline>();
@@ -81,6 +82,9 @@ public class TravelPlannerRouteSelection extends Activity implements
 				.getString(Execution.DECISION_SUPPORT_TRAVEL_PLANNER_RESONSE);
 		routeReasoningRequest = executionBundle
 				.getString(Execution.DECISION_SUPPORT_TRAVEL_PLANNER_REQUEST);
+				
+		tranportationType = executionBundle
+				.getString(Execution.DECISION_SUPPORT_TRAVEL_PLANNER_MEANS_OF_TRANSPORTATION);
 
 		startingPoint = new Gson().fromJson(
 				executionBundle.getString(Execution.STARTING_POINT),
@@ -155,8 +159,22 @@ public class TravelPlannerRouteSelection extends Activity implements
 					Set<FilteringFactor> filteringFactors = new HashSet<FilteringFactor>();
 
 					Set<FilteringFactorValue> filteringFactorValueActivity = new HashSet<FilteringFactorValue>();
+					
+					String filteringFactorTranspType = null;
+					
+					if(tranportationType.equals(DefaultValues.CAR_TRANSPORTATION_TYPE))
+						filteringFactorTranspType = "CarCommute";
+					
+					if(tranportationType.equals(DefaultValues.WALK_TRANSPORTATION_TYPE))
+						filteringFactorTranspType = "Walk";
+					
+					if(tranportationType.equals(DefaultValues.BICYCLE_TRANSPORTATION_TYPE))
+						filteringFactorTranspType = "BikeCommute";
+					
+					
+					
 					filteringFactorValueActivity.add(new FilteringFactorValue(
-							"CarCommute"));
+							filteringFactorTranspType));
 					FilteringFactor filteringFactor = new FilteringFactor(
 							FilteringFactorName.ACTIVITY,
 							filteringFactorValueActivity);

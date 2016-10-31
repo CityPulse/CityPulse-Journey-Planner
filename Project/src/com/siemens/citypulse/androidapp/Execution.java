@@ -78,6 +78,7 @@ public class Execution extends Activity implements LocationListener {
 
 	public static final String DECISION_SUPPORT_TRAVEL_PLANNER_RESONSE = "decision support travel planner response";
 	public static final String DECISION_SUPPORT_TRAVEL_PLANNER_REQUEST = "decision support travel planner request";
+	public static final String DECISION_SUPPORT_TRAVEL_PLANNER_MEANS_OF_TRANSPORTATION = "decision support travel planner means of transportation";
 
 	public static final String TRAVEL_STATUS_REQUEST = "travel status request";
 	public static final String TRAVEL_STATUS_EVENT = "travel status event";
